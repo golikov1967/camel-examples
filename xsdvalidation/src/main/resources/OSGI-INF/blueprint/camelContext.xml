@@ -9,7 +9,7 @@
   <cm:property-placeholder persistent-id="camelexamples.xsdvalidation">
     <cm:default-properties>
       <cm:property name="brokerUrl" value="vm://localhost?broker.persistent=false" />
-      <cm:property name="queueName" value="testqueue" />
+      <cm:property name="sourceQueueName" value="testqueue" />
       <cm:property name="invalidEndpoint" value="mock:invalid" />
     </cm:default-properties>
   </cm:property-placeholder>
@@ -22,18 +22,16 @@
 
   <camelContext xmlns="http://camel.apache.org/schema/blueprint">
     <route>
-      <from uri="activemq:{{queueName}}" />
+      <from uri="activemq:queue:{{sourceQueueName}}" />
       <doTry>
         <to uri="validator:xsds/shiporder.xsd" />
+        <recipientList>
+          <simple>activemq:queue:${in.header.destination}</simple>
+        </recipientList>
         <doCatch>
           <exception>org.apache.camel.ValidationException</exception>
           <to uri="{{invalidEndpoint}}" />
         </doCatch>
-        <doFinally>
-          <recipientList>
-            <simple>activemq:${in.header.DESTINATION}</simple>
-          </recipientList>
-        </doFinally>
       </doTry>
     </route>
   </camelContext>
