@@ -1,0 +1,20 @@
+<shiporder xmlns="http://camelexamples/xsdvalidation/shiporder">
+  <orderperson>hello</orderperson>
+  <shipto>
+    <name>A. N. Other</name>
+    <address>1 A Road</address>
+    <city>City</city>
+    <country>Country</country>
+  </shipto>
+  <item>
+    <title>Item 1</title>
+    <note>Note 1</note>
+    <quantity>201</quantity>
+    <price>1000.00</price>
+  </item>
+  <item>
+    <title>Item 2</title>
+    <quantity>401</quantity>
+    <price>10.00</price>
+  </item>
+</shiporder>
