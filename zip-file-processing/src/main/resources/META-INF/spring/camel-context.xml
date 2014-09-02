@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+
+    <bean id="zipFileDataFormat" class="org.apache.camel.dataformat.zipfile.ZipFileDataFormat">
+        <property name="usingIterator" value="true"/>
+    </bean>
+
+    <bean id="zipAggregationStrategy" class="org.apache.camel.processor.aggregate.zipfile.ZipAggregationStrategy"/>
+
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <!-- write the zip so we can process something repeatedly -->
+        <route id="writeZip">
+            <from uri="file://src/main/data?antInclude=*.xml&amp;noop=true"/>
+            <aggregate strategyRef="zipAggregationStrategy" completionFromBatchConsumer="true" eagerCheckCompletion="true" completionSize="2">
+                <correlationExpression>
+                        <constant>true</constant>
+                </correlationExpression>
+                <to uri="file://target?fileName=any.zip"/>
+            </aggregate>
+        </route>
+
+        <!-- extract the zip -->
+        <route id="readZip" streamCache="true">
+            <from uri="file://target?fileName=any.zip&amp;moveFailed=.error&amp;move=.done&amp;delay=5000"/>
+            <unmarshal ref="zipFileDataFormat"/>
+            <camel:split streaming="true">
+                <camel:simple>${body}</camel:simple>
+                <camel:to uri="log:org.apache.camel?level=INFO&amp;showAll=true&amp;multiline=true&amp;showStreams=true"/>
+                <camel:to uri="file://target/unzipped"/>
+            </camel:split>
+        </route>
+    </camelContext>
+
+</beans>
