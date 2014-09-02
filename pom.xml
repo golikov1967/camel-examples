@@ -13,6 +13,7 @@
     <modules>
         <module>zip-file-processing</module>
         <module>xsdvalidation</module>
+        <module>activemq-mqtt</module>
     </modules>
 
     <properties>
