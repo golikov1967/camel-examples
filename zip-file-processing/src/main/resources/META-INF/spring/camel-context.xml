@@ -29,7 +29,7 @@
 
         <!-- extract the zip -->
         <route id="readZip" streamCache="true">
-            <from uri="file://target?fileName=any.zip&amp;moveFailed=.error&amp;move=.done&amp;delay=5000"/>
+            <from uri="file://target?fileName=any.zip&amp;moveFailed=.error&amp;move=.done"/>
             <unmarshal ref="zipFileDataFormat"/>
             <camel:split streaming="true">
                 <camel:simple>${body}</camel:simple>
